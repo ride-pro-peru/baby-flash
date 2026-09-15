@@ -44,10 +44,6 @@ class CategorySelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isSelected ? color : color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(isTablet ? 26 : 20),
-                border: Border.all(
-                  color: isSelected ? color : CupertinoColors.transparent,
-                  width: 2,
-                ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

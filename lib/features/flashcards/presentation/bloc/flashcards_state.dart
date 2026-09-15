@@ -10,6 +10,7 @@ class FlashcardState extends Equatable {
   final bool isLoading;
   final bool isPlayingAudio;
   final String? errorMessage;
+  final Map<String, String> customCardImages;
 
   const FlashcardState({
     this.categories = const [],
@@ -19,6 +20,7 @@ class FlashcardState extends Equatable {
     this.isLoading = false,
     this.isPlayingAudio = false,
     this.errorMessage,
+    this.customCardImages = const {},
   });
 
   FlashcardEntity? get currentCard {
@@ -27,7 +29,11 @@ class FlashcardState extends Equatable {
   }
 
   bool get hasPrevious => currentIndex > 0;
-  bool get hasNext => currentIndex < cards.length - 1;
+  bool get hasNext => currentIndex < cards.length;
+
+  int get totalSlots => cards.length + 1;
+
+  String? customImagePathFor(String cardId) => customCardImages[cardId];
 
   FlashcardState copyWith({
     List<CategoryEntity>? categories,
@@ -37,6 +43,7 @@ class FlashcardState extends Equatable {
     bool? isLoading,
     bool? isPlayingAudio,
     String? errorMessage,
+    Map<String, String>? customCardImages,
     bool clearSelectedCategory = false,
   }) {
     return FlashcardState(
@@ -47,6 +54,7 @@ class FlashcardState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       isPlayingAudio: isPlayingAudio ?? this.isPlayingAudio,
       errorMessage: errorMessage,
+      customCardImages: customCardImages ?? this.customCardImages,
     );
   }
 
@@ -59,5 +67,6 @@ class FlashcardState extends Equatable {
         isLoading,
         isPlayingAudio,
         errorMessage,
+        customCardImages,
       ];
 }

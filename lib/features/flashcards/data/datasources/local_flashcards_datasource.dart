@@ -1,8 +1,78 @@
+import 'dart:io';
+
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/flashcard_model.dart';
 import '../models/category_model.dart';
 
 class LocalFlashcardsDataSource {
+  Box<String> get _cardImagesBox => Hive.box<String>('card_images');
+
+  Box get _customCardsBox => Hive.box('custom_cards');
+
+  Future<Directory> get _customImagesDir async {
+    final docs = await getApplicationDocumentsDirectory();
+    final dir = Directory('${docs.path}/custom_images');
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return dir;
+  }
+
+  String? getCustomImagePath(String cardId) => _cardImagesBox.get(cardId);
+
+  Map<String, String> getAllCustomImages() =>
+      Map<String, String>.from(_cardImagesBox.toMap());
+
+  Future<String> saveCustomImage(String cardId, File source) async {
+    final ext = source.path.contains('.') ? source.path.split('.').last : 'jpg';
+    final dir = await _customImagesDir;
+    final target = '${dir.path}/${cardId}_${DateTime.now().millisecondsSinceEpoch}.$ext';
+    await source.copy(target);
+    await _cardImagesBox.put(cardId, target);
+    return target;
+  }
+
+  List<FlashcardModel> getCustomCards({String? categoryId}) {
+    final raw = _customCardsBox.get('cards', defaultValue: <Map<String, dynamic>>[]);
+    final models = <FlashcardModel>[];
+    for (final item in raw) {
+      if (item is Map) {
+        models.add(FlashcardModel.fromMap(Map<String, dynamic>.from(item)));
+      }
+    }
+    if (categoryId == null) return models;
+    return models.where((m) => m.categoryId == categoryId).toList();
+  }
+
+  Future<String> addCustomCard({
+    required String word,
+    required String categoryId,
+    required File source,
+  }) async {
+    final dir = await _customImagesDir;
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final ext = source.path.contains('.') ? source.path.split('.').last : 'jpg';
+    final safeWord = word.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
+    final target = '${dir.path}/${categoryId}_${safeWord}_$ts.$ext';
+    await source.copy(target);
+
+    final id = 'custom_${categoryId}_$ts';
+    final model = FlashcardModel(
+      id: id,
+      word: word,
+      imagePath: target,
+      audioPath: '',
+      categoryId: categoryId,
+    );
+    final cards = List<Map<String, dynamic>>.from(
+      _customCardsBox.get('cards', defaultValue: <Map<String, dynamic>>[]),
+    )..add(model.toMap());
+    await _customCardsBox.put('cards', cards);
+    return id;
+  }
+
   List<CategoryModel> getCategories() {
     return [
       CategoryModel(id: 'mix', name: 'Mix', emoji: '🎲', colorIndex: 12, icon: Iconsax.shuffle),
@@ -21,14 +91,16 @@ class LocalFlashcardsDataSource {
     ];
   }
 
-  List<FlashcardModel> getCardsByCategory(String categoryId) {
-    final allCards = _getAllCards();
-    if (categoryId == 'mix') {
-      final shuffled = List<FlashcardModel>.from(allCards)..shuffle();
-      return shuffled;
-    }
-    return allCards.where((card) => card.categoryId == categoryId).toList();
+List<FlashcardModel> getCardsByCategory(String categoryId) {
+  final allCards = [..._getAllCards(), ...getCustomCards()];
+  if (categoryId == 'mix') {
+    final shuffled = List<FlashcardModel>.from(allCards)..shuffle();
+    return shuffled;
   }
+  return allCards
+      .where((card) => card.categoryId == categoryId)
+      .toList();
+}
 
   List<FlashcardModel> _getAllCards() {
     return [

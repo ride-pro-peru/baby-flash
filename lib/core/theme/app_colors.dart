@@ -4,38 +4,66 @@ class AppColors {
   AppColors._();
 
   // Light
-  static const Color primary = Color(0xFF6C63FF);
-  static const Color secondary = Color(0xFFFF6584);
-  static const Color background = Color(0xFFF5F5FF);
+  static const Color primary = Color(0xFF7C71F5);
+  static const Color secondary = Color(0xFFFF7A90);
+  static const Color background = Color(0xFFFBF8F3); // Warm pastel cream
   static const Color cardBackground = CupertinoColors.white;
-  static const Color cardImageBackground = Color(0xFFF4F4FA);
-  static const Color textPrimary = Color(0xFF2D3142);
-  static const Color textSecondary = Color(0xFF6B7394);
-  static const Color success = Color(0xFF4CAF50);
-  static const Color warning = Color(0xFFFFC107);
+  static const Color cardImageBackground = Color(0xFFF8F5EF);
+  static const Color textPrimary = Color(0xFF2C3140);
+  static const Color textSecondary = Color(0xFF757D94);
+  static const Color success = Color(0xFF5AC27E);
+  static const Color warning = Color(0xFFFFB834);
 
   // Dark
-  static const Color darkBackground = Color(0xFF13131A);
-  static const Color darkCardBackground = Color(0xFF252836);
-  static const Color darkCardImageBackground = Color(0xFF2E2E44);
-  static const Color darkTextPrimary = Color(0xFFF0F0FF);
-  static const Color darkTextSecondary = Color(0xFF9A9DB5);
+  static const Color darkBackground = Color(0xFF181A22);
+  static const Color darkCardBackground = Color(0xFF232734);
+  static const Color darkCardImageBackground = Color(0xFF2D3244);
+  static const Color darkTextPrimary = Color(0xFFF5F6FA);
+  static const Color darkTextSecondary = Color(0xFFA2A8BD);
 
+  // Pastel Category Palettes
   static const List<Color> categoryColors = [
-    Color(0xFFFF6B6B),
-    Color(0xFF4ECDC4),
-    Color(0xFF45B7D1),
-    Color(0xFFFFA07A),
-    Color(0xFF98D8C8),
-    Color(0xFFF7DC6F),
-    Color(0xFFBB8FCE),
-    Color(0xFF85C1E9),
-    Color(0xFFF1948A),
-    Color(0xFF82E0AA),
-    Color(0xFFF0B27A),
-    Color(0xFFAED6F1),
-    Color(0xFF9B59B6),
+    Color(0xFFE06D53), // 0: Animales
+    Color(0xFFE55B77), // 1: Frutas
+    Color(0xFF7B62BA), // 2: Colores
+    Color(0xFF388ECC), // 3: Vehículos
+    Color(0xFFC4891C), // 4: Cuerpo
+    Color(0xFF359B65), // 5: Hogar
+    Color(0xFFB8538A), // 6: Ropa
+    Color(0xFFCC6E37), // 7: Familia
+    Color(0xFFB29312), // 8: Emociones
+    Color(0xFF30996F), // 9: Comida
+    Color(0xFF42A34F), // 10: Naturaleza
+    Color(0xFF2393A5), // 11: Números
+    Color(0xFF5B67C5), // 12: Mix
   ];
+
+  static const List<Color> pastelCategoryBackgrounds = [
+    Color(0xFFFFEAE0), // 0: Animales
+    Color(0xFFFFE4E9), // 1: Frutas
+    Color(0xFFEDE6FA), // 2: Colores
+    Color(0xFFE2F2FF), // 3: Vehículos
+    Color(0xFFFFF4D4), // 4: Cuerpo
+    Color(0xFFE0F7EB), // 5: Hogar
+    Color(0xFFFAE4F0), // 6: Ropa
+    Color(0xFFFFEBDD), // 7: Familia
+    Color(0xFFFFF9CF), // 8: Emociones
+    Color(0xFFE2F7EF), // 9: Comida
+    Color(0xFFE2F8E3), // 10: Naturaleza
+    Color(0xFFDFF6F9), // 11: Números
+    Color(0xFFEAEBFE), // 12: Mix
+  ];
+
+  static Color categoryPastelBg(int index, Brightness brightness) {
+    if (brightness == Brightness.dark) {
+      return darkCardBackground;
+    }
+    return pastelCategoryBackgrounds[index % pastelCategoryBackgrounds.length];
+  }
+
+  static Color categoryAccent(int index, Brightness brightness) {
+    return categoryColors[index % categoryColors.length];
+  }
 
   static Color backgroundFor(Brightness brightness) =>
       brightness == Brightness.dark ? darkBackground : background;

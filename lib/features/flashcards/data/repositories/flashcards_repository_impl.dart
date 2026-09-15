@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../datasources/local_flashcards_datasource.dart';
 import '../../domain/entities/flashcard_entity.dart';
 import '../../domain/entities/category_entity.dart';
@@ -42,6 +44,29 @@ class FlashcardsRepositoryImpl implements FlashcardsRepository {
       imagePath: model.imagePath,
       audioPath: model.audioPath,
       categoryId: model.categoryId,
+    );
+  }
+
+  @override
+  Future<Map<String, String>> getAllCustomImages() async {
+    return dataSource.getAllCustomImages();
+  }
+
+  @override
+  Future<String> saveCardImage(String cardId, File image) async {
+    return dataSource.saveCustomImage(cardId, image);
+  }
+
+  @override
+  Future<String> addCustomCard({
+    required String word,
+    required String categoryId,
+    required File image,
+  }) async {
+    return dataSource.addCustomCard(
+      word: word,
+      categoryId: categoryId,
+      source: image,
     );
   }
 }

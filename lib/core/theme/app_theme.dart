@@ -1,32 +1,30 @@
 import 'package:flutter/cupertino.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
   AppTheme._();
 
   static CupertinoThemeData get lightTheme {
-    return const CupertinoThemeData(
+    return CupertinoThemeData(
       brightness: Brightness.light,
       primaryColor: AppColors.primary,
       primaryContrastingColor: AppColors.secondary,
       scaffoldBackgroundColor: AppColors.background,
-      barBackgroundColor: Color(0xF0F9F9FF),
+      barBackgroundColor: const Color(0xF0FAF8F3),
       textTheme: CupertinoTextThemeData(
         primaryColor: AppColors.primary,
-        textStyle: TextStyle(
-          fontFamily: '.SF Pro Text',
+        textStyle: GoogleFonts.fredoka(
           fontSize: 16,
           color: AppColors.textPrimary,
         ),
-        navLargeTitleTextStyle: TextStyle(
-          fontFamily: '.SF Pro Display',
+        navLargeTitleTextStyle: GoogleFonts.fredoka(
           fontSize: 34,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        navTitleTextStyle: TextStyle(
-          fontFamily: '.SF Pro Text',
-          fontSize: 17,
+        navTitleTextStyle: GoogleFonts.fredoka(
+          fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
@@ -35,28 +33,25 @@ class AppTheme {
   }
 
   static CupertinoThemeData get darkTheme {
-    return const CupertinoThemeData(
+    return CupertinoThemeData(
       brightness: Brightness.dark,
       primaryColor: AppColors.primary,
       primaryContrastingColor: AppColors.secondary,
       scaffoldBackgroundColor: AppColors.darkBackground,
-      barBackgroundColor: Color(0xFF1E1E32),
+      barBackgroundColor: const Color(0xF01E212D),
       textTheme: CupertinoTextThemeData(
         primaryColor: AppColors.primary,
-        textStyle: TextStyle(
-          fontFamily: '.SF Pro Text',
+        textStyle: GoogleFonts.fredoka(
           fontSize: 16,
           color: AppColors.darkTextPrimary,
         ),
-        navLargeTitleTextStyle: TextStyle(
-          fontFamily: '.SF Pro Display',
+        navLargeTitleTextStyle: GoogleFonts.fredoka(
           fontSize: 34,
           fontWeight: FontWeight.w700,
           color: AppColors.darkTextPrimary,
         ),
-        navTitleTextStyle: TextStyle(
-          fontFamily: '.SF Pro Text',
-          fontSize: 17,
+        navTitleTextStyle: GoogleFonts.fredoka(
+          fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.darkTextPrimary,
         ),

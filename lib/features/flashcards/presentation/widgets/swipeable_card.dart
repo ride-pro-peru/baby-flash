@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -8,8 +10,10 @@ import '../../../../core/theme/responsive_layout.dart';
 class SwipeableCard extends StatefulWidget {
   final String word;
   final String imagePath;
+  final String? customImagePath;
   final String? nextWord;
   final String? nextImagePath;
+  final String? nextCustomImagePath;
   final VoidCallback? onSwipeRight;
   final VoidCallback? onSwipeLeft;
   final VoidCallback? onTap;
@@ -19,8 +23,10 @@ class SwipeableCard extends StatefulWidget {
     super.key,
     required this.word,
     required this.imagePath,
+    this.customImagePath,
     this.nextWord,
     this.nextImagePath,
+    this.nextCustomImagePath,
     this.onSwipeRight,
     this.onSwipeLeft,
     this.onTap,
@@ -191,6 +197,7 @@ class _SwipeableCardState extends State<SwipeableCard>
                       cardHeight,
                       word: widget.nextWord!,
                       imagePath: widget.nextImagePath!,
+                      customImagePath: widget.nextCustomImagePath,
                       isBackground: true,
                     ),
                   ),
@@ -239,6 +246,7 @@ class _SwipeableCardState extends State<SwipeableCard>
               cardHeight,
               word: widget.word,
               imagePath: widget.imagePath,
+              customImagePath: widget.customImagePath,
               isBackground: false,
             ),
           ),
@@ -253,6 +261,7 @@ class _SwipeableCardState extends State<SwipeableCard>
     double height, {
     required String word,
     required String imagePath,
+    String? customImagePath,
     bool isBackground = false,
   }) {
     final isTablet = ResponsiveLayout.isTablet(context);
@@ -294,19 +303,12 @@ class _SwipeableCardState extends State<SwipeableCard>
                   width: double.infinity,
                   height: double.infinity,
                   color: AppColors.cardImageBackgroundFor(brightness),
-                  child: Image.asset(
-                    imagePath,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Iconsax.gallery_slash,
-                        size: isTablet ? 120 : 80,
-                        color: isDark ? CupertinoColors.systemGrey : CupertinoColors.systemGrey3,
-                      );
-                    },
+                  child: _buildCardImage(
+                    context,
+                    imagePath: imagePath,
+                    customImagePath: customImagePath,
+                    isTablet: isTablet,
+                    isDark: isDark,
                   ),
                 ),
               ),
@@ -332,5 +334,45 @@ class _SwipeableCardState extends State<SwipeableCard>
         ],
       ),
     );
+  }
+
+  Widget _buildCardImage(
+    BuildContext context, {
+    required String imagePath,
+    String? customImagePath,
+    required bool isTablet,
+    required bool isDark,
+  }) {
+    final isFile = customImagePath != null || !imagePath.startsWith('assets/');
+    final image = isFile
+        ? Image.file(
+            File(customImagePath ?? imagePath),
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Iconsax.gallery_slash,
+                size: isTablet ? 120 : 80,
+                color: isDark ? CupertinoColors.systemGrey : CupertinoColors.systemGrey3,
+              );
+            },
+          )
+        : Image.asset(
+            imagePath,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Iconsax.gallery_slash,
+                size: isTablet ? 120 : 80,
+                color: isDark ? CupertinoColors.systemGrey : CupertinoColors.systemGrey3,
+              );
+            },
+          );
+    return image;
   }
 }

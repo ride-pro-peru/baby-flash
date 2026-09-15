@@ -9,6 +9,8 @@ final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
   await Hive.initFlutter();
+  await Hive.openBox<String>('card_images');
+  await Hive.openBox('custom_cards');
 
   getIt.registerLazySingleton<LocalFlashcardsDataSource>(
     () => LocalFlashcardsDataSource(),

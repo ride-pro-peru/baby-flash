@@ -12,6 +12,8 @@ class FlashcardsBloc extends Bloc<FlashcardEvent, FlashcardState> {
     on<SwipeNext>(_onSwipeNext);
     on<SwipePrevious>(_onSwipePrevious);
     on<DeselectCategory>(_onDeselectCategory);
+    on<SetCardImage>(_onSetCardImage);
+    on<CreateCustomCard>(_onCreateCustomCard);
   }
 
   Future<void> _onLoadCategories(
@@ -21,8 +23,10 @@ class FlashcardsBloc extends Bloc<FlashcardEvent, FlashcardState> {
     emit(state.copyWith(isLoading: true));
     try {
       final categories = await repository.getCategories();
+      final customImages = await repository.getAllCustomImages();
       emit(state.copyWith(
         categories: categories,
+        customCardImages: customImages,
         isLoading: false,
       ));
     } catch (e) {
@@ -61,7 +65,7 @@ class FlashcardsBloc extends Bloc<FlashcardEvent, FlashcardState> {
     SwipeNext event,
     Emitter<FlashcardState> emit,
   ) {
-    if (state.hasNext) {
+    if (state.currentIndex < state.cards.length) {
       emit(state.copyWith(
         currentIndex: state.currentIndex + 1,
       ));
@@ -76,13 +80,13 @@ class FlashcardsBloc extends Bloc<FlashcardEvent, FlashcardState> {
     SwipePrevious event,
     Emitter<FlashcardState> emit,
   ) {
-    if (state.hasPrevious) {
+    if (state.currentIndex > 0) {
       emit(state.copyWith(
         currentIndex: state.currentIndex - 1,
       ));
     } else {
       emit(state.copyWith(
-        currentIndex: state.cards.length - 1,
+        currentIndex: state.cards.length,
       ));
     }
   }
@@ -96,5 +100,45 @@ class FlashcardsBloc extends Bloc<FlashcardEvent, FlashcardState> {
       cards: const [],
       currentIndex: 0,
     ));
+  }
+
+  Future<void> _onSetCardImage(
+    SetCardImage event,
+    Emitter<FlashcardState> emit,
+  ) async {
+    try {
+      final savedPath = await repository.saveCardImage(event.cardId, event.image);
+      final customImages = Map<String, String>.from(state.customCardImages)
+        ..[event.cardId] = savedPath;
+      emit(state.copyWith(customCardImages: customImages));
+    } catch (e) {
+      emit(state.copyWith(
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> _onCreateCustomCard(
+    CreateCustomCard event,
+    Emitter<FlashcardState> emit,
+  ) async {
+    try {
+      await repository.addCustomCard(
+        word: event.word,
+        categoryId: event.categoryId,
+        image: event.image,
+      );
+      final category = state.selectedCategory;
+      if (category == null) return;
+      final cards = await repository.getCardsByCategory(category.id);
+      emit(state.copyWith(
+        cards: cards,
+        currentIndex: cards.length - 1,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        errorMessage: e.toString(),
+      ));
+    }
   }
 }
